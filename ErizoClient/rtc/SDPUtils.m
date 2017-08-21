@@ -181,6 +181,8 @@
     if (mLineIndex == -1) {
         RTCLog(@"No m=video line, so can't prefer %@", codec);
         return description;
+    } else {
+      [lines insertObject:@"b=AS:1000" atIndex:mLineIndex + 1];
     }
     // An array with all payload types with name |codec|. The payload types are
     // integers in the range 96-127, but they are stored as strings here.
