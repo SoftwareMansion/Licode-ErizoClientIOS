@@ -66,50 +66,50 @@ typedef void(^SocketIOCallback)(NSArray* data);
         [[socketIO emitWithAck:@"token" with:@[decodedToken]] timingOutAfter:0 callback:^(NSArray* data) {
             [self onSendTokenCallback](data);
         }];
-    }];
-    [socketIO on:@"disconnect" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        L_WARNING(@"Websocket disconnected: %@", data);
-        outMessagesQueues = [NSMutableDictionary dictionary];
-        streamSignalingDelegates = [[NSMutableDictionary alloc] init];
-        [_roomDelegate signalingChannel:self didDisconnectOfRoom:roomMetadata];
-    }];
-    [socketIO on:@"error" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        L_ERROR(@"Websocket error: %@", data);
-        NSString *dataString = [NSString stringWithFormat:@"%@", data];
-        [_roomDelegate signalingChannel:self didError:dataString];
-    }];
-    [socketIO on:@"reconnect" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        // TODO
-    }];
-    [socketIO on:@"reconnectAttempt" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        // TODO
-    }];
-    [socketIO on:@"statusChange" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-    }];
-    [socketIO on:kEventPublishMe callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        [self onSocketPublishMe:[data objectAtIndex:0]];
-    }];
-    [socketIO on:kEventOnAddStream callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        [self onSocketAddStream:[data objectAtIndex:0]];
-    }];
-    [socketIO on:kEventOnRemoveStream callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        [self onSocketRemoveStream:[data objectAtIndex:0]];
-    }];
-    [socketIO on:kEventSignalingMessageErizo callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        [self onSocketSignalingMessage:[data objectAtIndex:0] type:kEventSignalingMessageErizo];
-    }];
-    [socketIO on:kEventSignalingMessagePeer callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        [self onSocketSignalingMessage:[data objectAtIndex:0] type:kEventSignalingMessagePeer];
-    }];
-    [socketIO on:kEventOnDataStream callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
-        [self onSocketDataStream:[data objectAtIndex:0]];
+        [socketIO on:@"disconnect" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            L_WARNING(@"Websocket disconnected: %@", data);
+            outMessagesQueues = [NSMutableDictionary dictionary];
+            streamSignalingDelegates = [[NSMutableDictionary alloc] init];
+            [_roomDelegate signalingChannel:self didDisconnectOfRoom:roomMetadata];
+            [socketIO removeAllHandlers];
+        }];
+        [socketIO on:@"error" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            L_ERROR(@"Websocket error: %@", data);
+            NSString *dataString = [NSString stringWithFormat:@"%@", data];
+            [_roomDelegate signalingChannel:self didError:dataString];
+        }];
+        [socketIO on:@"reconnect" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            // TODO
+        }];
+        [socketIO on:@"reconnectAttempt" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            // TODO
+        }];
+        [socketIO on:@"statusChange" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+        }];
+        [socketIO on:kEventPublishMe callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            [self onSocketPublishMe:[data objectAtIndex:0]];
+        }];
+        [socketIO on:kEventOnAddStream callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            [self onSocketAddStream:[data objectAtIndex:0]];
+        }];
+        [socketIO on:kEventOnRemoveStream callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            [self onSocketRemoveStream:[data objectAtIndex:0]];
+        }];
+        [socketIO on:kEventSignalingMessageErizo callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            [self onSocketSignalingMessage:[data objectAtIndex:0] type:kEventSignalingMessageErizo];
+        }];
+        [socketIO on:kEventSignalingMessagePeer callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            [self onSocketSignalingMessage:[data objectAtIndex:0] type:kEventSignalingMessagePeer];
+        }];
+        [socketIO on:kEventOnDataStream callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
+            [self onSocketDataStream:[data objectAtIndex:0]];
+        }];
     }];
 
     [socketIO connect];
 }
 
 - (void)disconnect {
-    [socketIO removeAllHandlers];
     [socketIO disconnect];
 }
 
