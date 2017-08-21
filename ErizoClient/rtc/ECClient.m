@@ -386,8 +386,6 @@ readyToSubscribeStreamId:(NSString *)streamId
 }
 
 - (void)processSignalingMessage:(ECSignalingMessage *)message {
-    NSParameterAssert(_peerConnection ||
-                      message.type == kECSignalingMessageTypeBye);
     switch (message.type) {
         case kECSignalingMessageTypeReady:
             break;
@@ -469,8 +467,6 @@ readyToSubscribeStreamId:(NSString *)streamId
             [self.delegate appClient:self didError:sdpError];
             return;
         }
-        
-        C_L_INFO(@"did create a session description!");
         
         RTCSessionDescription *newSDP =
                     [SDPUtils descriptionForDescription:sdp
