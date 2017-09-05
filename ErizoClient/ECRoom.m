@@ -24,6 +24,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     NSMutableDictionary *p2pClients;
     NSTimer *publishingStatsTimer;
     NSMutableDictionary *statsBySSRC;
+    BOOL isUnpublishing;
 }
 
 - (instancetype)init {
@@ -33,6 +34,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
         }
         _recordEnabled = NO;
         _publishingStats = NO;
+        isUnpublishing = NO;
         p2pClients = [NSMutableDictionary dictionary];
         _streamsByStreamId = [NSMutableDictionary dictionary];
         self.status = ECRoomStatusReady;
@@ -90,12 +92,16 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     
     // Reset stats used for bitrateCalculation
     statsBySSRC = [NSMutableDictionary dictionary];
+    
+    // Reset isUnpublishing property
+    isUnpublishing = NO;
 
     // Ask for publish
     [_signalingChannel publish:options signalingChannelDelegate:publishClient];
 }
 
 - (void)unpublish {
+    isUnpublishing = YES;
     [_signalingChannel unpublish:_publishStreamId
         signalingChannelDelegate:publishClient];
 }
@@ -289,7 +295,10 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     if (_client == publishClient) {
         if (state == ECClientStateDisconnected) {
             [publishingStatsTimer invalidate];
-            self.status = ECRoomStatusDisconnected;
+            
+            if (!isUnpublishing) {
+                self.status = ECRoomStatusDisconnected;
+            }
         } else if (state == ECClientStateConnected) {
             publishingStatsTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
                                                                     target:self

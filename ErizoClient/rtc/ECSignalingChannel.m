@@ -73,6 +73,7 @@ typedef void(^SocketIOCallback)(NSArray* data);
             streamSignalingDelegates = [[NSMutableDictionary alloc] init];
             [_roomDelegate signalingChannel:self didDisconnectOfRoom:roomMetadata];
             [socketIO removeAllHandlers];
+            socketIO = nil;
         }];
         [socketIO on:@"error" callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull emitter) {
             L_ERROR(@"Websocket error: %@", data);
@@ -175,9 +176,8 @@ typedef void(^SocketIOCallback)(NSArray* data);
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
     NSArray *dataToSend = [[NSArray alloc] initWithObjects: streamId, nil];
-    SocketIOCallback callback = [self onUnPublishCallback:streamId];
-    [[socketIO emitWithAck:@"unpublish" with:@[dataToSend, [NSNull null]]] timingOutAfter:10
-                                                                                 callback:callback];
+    [socketIO emit:@"unpublish" with:@[dataToSend, [NSNull null]]];
+    [_roomDelegate signalingChannel:self didUnpublishStreamWithId:streamId];
 }
 
 - (void)publishToPeerID:(NSString *)peerSocketId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
