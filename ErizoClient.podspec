@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
   spec.source_files = [ 'ErizoClient/**/*.{h,m}', 'Vendor/**/*.{h,m}' ]
 
   # deps
-  spec.dependency 'PodRTC', '60.4.0.3'
+  spec.dependency 'PodRTC', '61.4.0.0'
   spec.dependency 'Socket.IO-Client-Swift', '10.2.0'
 
   # libs
