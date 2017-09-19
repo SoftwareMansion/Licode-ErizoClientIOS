@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
 
   # deps
   spec.dependency 'PodRTC', '61.4.0.0'
-  spec.dependency 'Socket.IO-Client-Swift', '10.2.0'
+  spec.dependency 'Socket.IO-Client-Swift', '11.1.3'
 
   # libs
   spec.libraries	= 'icucore'
