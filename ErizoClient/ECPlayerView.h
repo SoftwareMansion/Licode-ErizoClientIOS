@@ -45,6 +45,20 @@
  */
 - (instancetype)initWithLiveStream:(ECStream *)liveStream frame:(CGRect)frame;
 
+/**
+ Create a Player View with the given stream that is being consumed in
+ a custom frame.
+
+ @param liveStream The stream that is being consumed by the client.
+ @param frame Custom frame where this control should be rendered.
+ @param pass if in imessage
+
+ @see ECRoomDelegate
+
+ @returns instancetype
+ */
+- (instancetype)initWithLiveStream:(ECStream *)liveStream frame:(CGRect)frame iMessage:(BOOL)iMessage;
+
 
 /**
  Remove the current assigned rendered for this player

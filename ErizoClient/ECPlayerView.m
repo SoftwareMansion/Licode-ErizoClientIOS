@@ -11,8 +11,8 @@
 
 @implementation ECPlayerView {
     
-CGRect viewFrame;
-
+    CGRect viewFrame;
+    BOOL _iMessage;
 }
 
 - (instancetype)init {
@@ -44,6 +44,11 @@ CGRect viewFrame;
     return self;
 }
 
+- (instancetype)initWithLiveStream:(ECStream *)liveStream frame:(CGRect)frame iMessage:(BOOL)iMessage {
+    _iMessage = iMessage;
+    return [self initWithLiveStream:liveStream frame:frame];
+}
+
 - (instancetype)initWithLiveStream:(ECStream *)liveStream {
     CGRect fullScreenFrame = CGRectMake(0, 0,
                [[UIScreen mainScreen] bounds].size.width,
@@ -61,8 +66,12 @@ CGRect viewFrame;
 - (void)removeRenderer {
     if (_stream.mediaStream.videoTracks.count > 0) {
         RTCVideoTrack *videoTrack = [_stream.mediaStream.videoTracks objectAtIndex:0];
-        
+
         [videoTrack removeRenderer:_videoView];
+
+        if (_iMessage) {
+            [_videoView performSelector:@selector(teardownGL)];
+        }
     }
 }
 
