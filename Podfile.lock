@@ -2,17 +2,17 @@ PODS:
   - OCHamcrest (6.1.1)
   - OCMockito (4.1.0):
     - OCHamcrest (~> 6.0)
-  - PodRTC (58.19.0.1)
+  - PodRTC (61.4.0.0)
 
 DEPENDENCIES:
   - OCMockito (~> 4.0)
-  - PodRTC (= 58.19.0.1)
+  - PodRTC (= 61.4.0.0)
 
 SPEC CHECKSUMS:
   OCHamcrest: 363e1bf738c3e8a94abe7c2c415f70d671adde38
   OCMockito: bceefcd365252bcdf8b59c1b2bd23890805fc0d8
-  PodRTC: 22bb11777f3914238e2af3f456f1f3b27b988a74
+  PodRTC: ae034da3517e187e261e5a1a1d7d7b3780ded6df
 
-PODFILE CHECKSUM: b6ac2a0f6277036fb93ff656a3a1d88ab6c53051
+PODFILE CHECKSUM: a5b3c265bde0b952be7dc41a940e1c1b4ed233bd
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.4.0

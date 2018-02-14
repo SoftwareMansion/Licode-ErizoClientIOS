@@ -233,9 +233,9 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     if (stream) {
         [_delegate room:self didRemovedStream:stream];
         [_streamsByStreamId removeObjectForKey:streamId];
-        if ([streamId isEqualToString:_publishStreamId]) {
-            publishClient = nil;
-        }
+    }
+    if ([streamId isEqualToString:_publishStreamId]) {
+        publishClient = nil;
     }
 }
 
@@ -278,6 +278,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
         [_delegate room:self didUnpublishStream:_publishStream];
         publishClient = nil;
         _publishStream = nil;
+        _publishStreamId = nil;
     }
 }
 

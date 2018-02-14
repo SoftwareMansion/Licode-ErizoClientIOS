@@ -175,8 +175,8 @@ typedef void(^SocketIOCallback)(NSArray* data);
 }
 
 - (void)unpublish:(NSString *)streamId signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
-    NSArray *dataToSend = [[NSArray alloc] initWithObjects: streamId, nil];
-    [socketIO emit:@"unpublish" with:@[dataToSend, [NSNull null]]];
+    NSNumber *longStreamId = [self longStreamId:streamId];
+    [socketIO emit:@"unpublish" with:@[longStreamId]];
     [_roomDelegate signalingChannel:self didUnpublishStreamWithId:streamId];
 }
 
@@ -211,9 +211,13 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 
 - (void)unsubscribe:(NSString *)streamId {
     ASSERT_STREAM_ID_STRING(streamId);
+    NSNumber *longStreamId = [self longStreamId:streamId];
+  
     SocketIOCallback callback = [self onUnSubscribeCallback:streamId];
-    [[socketIO emitWithAck:@"subscribe" with:@[streamId]] timingOutAfter:0
-                                                               callback:callback];
+    [[socketIO emitWithAck:@"unsubscribe"
+                      with:@[longStreamId]]
+            timingOutAfter:0
+                  callback:callback];
 }
 
 
@@ -284,8 +288,16 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 }
 
 - (void)onSocketRemoveStream:(NSDictionary *)msg {
-    NSString *sId = [NSString stringWithFormat:@"%@", [msg objectForKey:@"id"]];
-    [_roomDelegate signalingChannel:self didRemovedStreamId:sId];
+    // that's weird but sometimes we get an array of string ids instead of a number
+    // we're skipping such messages because it seems that the correct message is being sent just after the incorrect one
+    id msgId = [msg objectForKey:@"id"];
+
+    if (![msgId isKindOfClass:[NSArray class]]) {
+      NSString *sId = [NSString stringWithFormat:@"%@", msgId];
+      [_roomDelegate signalingChannel:self didRemovedStreamId:sId];
+    } else {
+      NSLog(@"Got id as array - skipped didRemovedStreamId");
+    }
 }
 
 - (void)onSocketDataStream:(NSDictionary *)msg {
@@ -479,6 +491,11 @@ signalingChannelDelegate:(id<ECSignalingChannelDelegate>)delegate {
 #
 # pragma mark - Private
 #
+
+- (NSNumber *)longStreamId:(NSString *)streamId {
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    return [f numberFromString:streamId];
+}
 
 - (void)decodeToken:(NSString *)token {
     NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:token options:0];
