@@ -45,8 +45,10 @@
 }
 
 - (instancetype)initWithLiveStream:(ECStream *)liveStream frame:(CGRect)frame iMessage:(BOOL)iMessage {
-    _iMessage = iMessage;
-    return [self initWithLiveStream:liveStream frame:frame];
+    if (self = [self initWithLiveStream: liveStream frame: frame]) {
+        _iMessage = iMessage;
+    }
+    return self;
 }
 
 - (instancetype)initWithLiveStream:(ECStream *)liveStream {
