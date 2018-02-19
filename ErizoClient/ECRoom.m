@@ -78,21 +78,21 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 }
 
 - (void)publish:(ECStream *)stream {
-    
+
     // Create a ECClient instance to handle peer connection for this publishing.
     // It is very important to use the same factory.
     publishClient = [[ECClient alloc] initWithDelegate:self
                                         andPeerFactory:stream.peerFactory];
-    
+
     // Keep track of the stream that this room will be publishing
     _publishStream = stream;
-    
+
     NSMutableDictionary *options = [stream.streamOptions mutableCopy];
     [options setObject:stream.streamAttributes forKey:@"attributes"];
-    
+
     // Reset stats used for bitrateCalculation
     statsBySSRC = [NSMutableDictionary dictionary];
-    
+
     // Reset isUnpublishing property
     isUnpublishing = NO;
 
@@ -165,13 +165,13 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 }
 
 - (void)signalingChannel:(ECSignalingChannel *)channel didConnectToRoom:(NSDictionary *)roomMeta {
-    
+
     _roomMetadata = roomMeta;
     _roomId = [_roomMetadata objectForKey:@"id"];
     if ([_roomMetadata objectForKey:@"p2p"]) {
         _peerToPeerRoom = [[roomMeta objectForKey:@"p2p"] boolValue];
     }
-    
+
     for (NSDictionary *streamData in [_roomMetadata objectForKey:@"streams"]) {
         NSString *streamId = [streamData objectForKey:@"id"];
         ECStream *stream = [_streamsByStreamId objectForKey:streamId];
@@ -241,7 +241,9 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
 
 - (void)signalingChannel:(ECSignalingChannel *)channel didUnsubscribeStreamWithId:(NSString *)streamId {
     ECStream *stream = [_streamsByStreamId objectForKey:streamId];
-    [_delegate room:self didUnSubscribeStream:stream];
+    if (stream) {
+        [_delegate room:self didUnSubscribeStream:stream];
+    }
 }
 
 - (void)signalingChannel:(ECSignalingChannel *)channel didRequestPublishP2PStreamWithId:(NSString *)streamId
@@ -296,7 +298,7 @@ static NSString * const kRTCStatsMediaTypeKey    = @"mediaType";
     if (_client == publishClient) {
         if (state == ECClientStateDisconnected) {
             [publishingStatsTimer invalidate];
-            
+
             if (!isUnpublishing) {
                 self.status = ECRoomStatusDisconnected;
             }
